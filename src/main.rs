@@ -1,5 +1,3 @@
-// original source: https://github.com/althonos/ffpb/blob/master/ffpb.py
-
 use kdam::Bar;
 use regex::Regex;
 use std::io::Read;
@@ -70,7 +68,7 @@ fn main() -> Result<(), Error> {
                 read_byte = b'\r';
             }
 
-            if pb.i != 0 {
+            if pb.n != 0 {
                 check_overwrite = false;
                 read_byte = b'\r';
             }
@@ -119,8 +117,8 @@ fn main() -> Result<(), Error> {
                     pb.unit = " second".to_string();
                 }
 
-                if current as isize - pb.i as isize > 0 {
-                    pb.update(current - pb.i);
+                if current as isize - pb.n as isize > 0 {
+                    pb.update(current - pb.n);
                 }
             }
         } else {
