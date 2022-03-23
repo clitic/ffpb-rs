@@ -4,7 +4,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/github/downloads/clitic/ffpb-rs/total?style=flat-square">
-  <img src="https://img.shields.io/github/downloads/clitic/ffpb-rs/total?style=flat-square">
+  <img src="https://img.shields.io/github/release/clitic/ffpb-rs?style=flat-square">
   <img src="https://img.shields.io/github/license/clitic/ffpb-rs?style=flat-square">
   <img src="https://img.shields.io/github/repo-size/clitic/ffpb-rs?style=flat-square">
   <img src="https://img.shields.io/tokei/lines/github/clitic/ffpb-rs?style=flat-square">
