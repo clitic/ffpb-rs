@@ -34,3 +34,9 @@ git clone https://github.com/clitic/ffpb-rs.git
 ```bash
 cargo build --release
 ```
+
+## License
+
+&copy; 2022 clitic
+
+This repository is licensed under the MIT license. See LICENSE for details.
