@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/tokei/lines/github/clitic/ffpb-rs?style=flat-square">
 </p>
 
-ffpb-rs is rust implementation of [ffpb](https://github.com/althonos/ffpb) with more powers.
+ffpb-rs is rust implementation of [ffpb](https://github.com/althonos/ffpb).
 ffpb is an ffmpeg progress formatter. It will attempt to display a nice progress bar in the output, based on the raw ffmpeg output, as well as an adaptative ETA timer.
 
 ![showcase](https://raw.githubusercontent.com/clitic/ffpb-rs/main/images/showcase.gif)
