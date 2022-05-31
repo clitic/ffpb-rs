@@ -43,6 +43,8 @@ Add this to your Cargo.toml file.
 ffpb = "0.1.0"
 ```
 
+ Then call ffmpeg like this.
+
 ```rust
 fn main() {
     let args = ["-i", "test.mp4", "-c:v", "copy", "test.mkv"]
@@ -53,6 +55,7 @@ fn main() {
     ffpb::ffmpeg(&args).unwrap();
 }
 ```
+
 ## Building From Source
 
 - Install [Rust](https://www.rust-lang.org)
