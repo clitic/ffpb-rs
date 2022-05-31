@@ -4,7 +4,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/github/downloads/clitic/ffpb-rs/total?style=flat-square">
-  <img src="https://img.shields.io/github/release/clitic/ffpb-rs?style=flat-square">
+  <img src="https://img.shields.io/crates/d/ffpb?style=flat-square">
+  <img src="https://img.shields.io/crates/v/ffpb?style=flat-square">
   <img src="https://img.shields.io/github/license/clitic/ffpb-rs?style=flat-square">
   <img src="https://img.shields.io/github/repo-size/clitic/ffpb-rs?style=flat-square">
   <img src="https://img.shields.io/tokei/lines/github/clitic/ffpb-rs?style=flat-square">
@@ -22,7 +23,7 @@ Visit [releases](https://github.com/clitic/ffpb-rs/releases) for prebuilt binari
 Or you can even install it through cargo.
 
 ```bash
-cargo install --git https://github.com/clitic/ffpb-rs
+cargo install ffpb
 ```
 
 ## Usage
@@ -33,6 +34,25 @@ ffpb is is not even self-aware. Any argument given to the ffpb command is transp
 ffpb --help
 ```
 
+## Rust Library
+
+Add this to your Cargo.toml file.
+
+```toml
+[dependencies]
+ffpb = "0.1.0"
+```
+
+```rust
+fn main() {
+    let args = ["-i", "test.mp4", "-c:v", "copy", "test.mkv"]
+        .iter()
+        .map(|x| x.to_string())
+        .collect::<Vec<String>>();
+
+    ffpb::ffmpeg(&args).unwrap();
+}
+```
 ## Building From Source
 
 - Install [Rust](https://www.rust-lang.org)
