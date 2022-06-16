@@ -1,6 +1,6 @@
 [package]
 name = "ffpb"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "A coloured progress bar for ffmpeg."
 repository = "https://github.com/clitic/ffpb-rs"

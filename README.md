@@ -40,7 +40,7 @@ Add this to your Cargo.toml file.
 
 ```toml
 [dependencies]
-ffpb = "0.1.0"
+ffpb = "0.1.1"
 ```
 
  Then call ffmpeg like this.
