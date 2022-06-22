@@ -3,12 +3,27 @@
 **Not smart. Not comprehensive. Not guaranteed to work.**
 
 <p align="center">
-  <img src="https://img.shields.io/github/downloads/clitic/ffpb-rs/total?style=flat-square">
-  <img src="https://img.shields.io/crates/d/ffpb?style=flat-square">
-  <img src="https://img.shields.io/crates/v/ffpb?style=flat-square">
-  <img src="https://img.shields.io/github/license/clitic/ffpb-rs?style=flat-square">
-  <img src="https://img.shields.io/github/repo-size/clitic/ffpb-rs?style=flat-square">
-  <img src="https://img.shields.io/tokei/lines/github/clitic/ffpb-rs?style=flat-square">
+  <a href="https://github.com/clitic/ffpb-rs">
+    <img src="https://img.shields.io/github/downloads/clitic/ffpb-rs/total?logo=github&style=flat-square">
+  </a>
+  <a href="https://crates.io/crates/ffpb">
+    <img src="https://img.shields.io/crates/d/ffpb?logo=rust&style=flat-square">
+  </a>
+  <a href="https://crates.io/crates/ffpb">
+    <img src="https://img.shields.io/crates/v/ffpb?style=flat-square">
+  </a>
+  <a href="https://docs.rs/ffpb/latest/ffpb">
+    <img src="https://img.shields.io/docsrs/ffpb?logo=docsdotrs&style=flat-square">
+  </a>
+  <a href="https://github.com/clitic/ffpb-rs">
+    <img src="https://img.shields.io/github/license/clitic/ffpb-rs?style=flat-square">
+  </a>
+  <a href="https://github.com/clitic/ffpb-rs">
+    <img src="https://img.shields.io/github/repo-size/clitic/ffpb-rs?logo=github&style=flat-square">
+  </a>
+  <a href="https://github.com/clitic/ffpb-rs">
+    <img src="https://img.shields.io/tokei/lines/github/clitic/ffpb-rs?style=flat-square">
+  </a>
 </p>
 
 ffpb-rs is rust implementation of [ffpb](https://github.com/althonos/ffpb).
