@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Bump up kdam to `v0.5`.
+- Bump up regex to `v1.10`.
 
 ### Fixed
 
@@ -25,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0] - 2022-05-31
 
-[Unreleased]: https://github.com/clitic/kdam/compare/0.1.2...HEAD
-[0.1.2]: https://github.com/clitic/kdam/compare/v0.1.1...0.1.2
-[0.1.1]: https://github.com/clitic/kdam/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/clitic/kdam/compare/27d4808...v0.1.0
+[Unreleased]: https://github.com/clitic/ffpb-rs/compare/0.1.2...HEAD
+[0.1.2]: https://github.com/clitic/ffpb-rs/compare/v0.1.1...0.1.2
+[0.1.1]: https://github.com/clitic/ffpb-rs/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/clitic/ffpb-rs/compare/27d4808...v0.1.0
