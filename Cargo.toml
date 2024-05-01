@@ -1,6 +1,6 @@
 [package]
 name = "ffpb"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "A coloured progress bar for ffmpeg."
 repository = "https://github.com/clitic/ffpb-rs"
@@ -9,8 +9,6 @@ categories = ["command-line-interface"]
 license = "MIT"
 readme = "README.md"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-regex = "1.5"
-kdam = "0.1.7"
+regex = "1.10"
+kdam = { version = "0.5", features = ["rich"] }

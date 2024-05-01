@@ -3,11 +3,8 @@
 **Not smart. Not comprehensive. Not guaranteed to work.**
 
 <p align="center">
-  <a href="https://github.com/clitic/ffpb-rs">
-    <img src="https://img.shields.io/github/downloads/clitic/ffpb-rs/total?logo=github&style=flat-square">
-  </a>
   <a href="https://crates.io/crates/ffpb">
-    <img src="https://img.shields.io/crates/d/ffpb?logo=rust&style=flat-square">
+    <img src="https://img.shields.io/crates/d/ffpb?style=flat-square">
   </a>
   <a href="https://crates.io/crates/ffpb">
     <img src="https://img.shields.io/crates/v/ffpb?style=flat-square">
@@ -15,14 +12,11 @@
   <a href="https://docs.rs/ffpb/latest/ffpb">
     <img src="https://img.shields.io/docsrs/ffpb?logo=docsdotrs&style=flat-square">
   </a>
-  <a href="https://github.com/clitic/ffpb-rs">
-    <img src="https://img.shields.io/github/license/clitic/ffpb-rs?style=flat-square">
+  <a href="https://github.com/clitic/ffpb#license">
+    <img src="https://img.shields.io/crates/l/ffpb?style=flat-square">
   </a>
   <a href="https://github.com/clitic/ffpb-rs">
-    <img src="https://img.shields.io/github/repo-size/clitic/ffpb-rs?logo=github&style=flat-square">
-  </a>
-  <a href="https://github.com/clitic/ffpb-rs">
-    <img src="https://img.shields.io/tokei/lines/github/clitic/ffpb-rs?style=flat-square">
+    <img src="https://img.shields.io/github/repo-size/clitic/ffpb-rs?style=flat-square">
   </a>
 </p>
 
@@ -55,7 +49,7 @@ Add this to your Cargo.toml file.
 
 ```toml
 [dependencies]
-ffpb = "0.1.1"
+ffpb = "0.1.2"
 ```
 
  Then call ffmpeg like this.
@@ -71,24 +65,8 @@ fn main() {
 }
 ```
 
-## Building From Source
-
-- Install [Rust](https://www.rust-lang.org)
-
-- Clone Repository
-
-```bash
-git clone https://github.com/clitic/ffpb-rs.git
-```
-
-- Build Release
-
-```bash
-cargo build --release
-```
-
 ## License
 
-&copy; 2022 clitic
+&copy; 2022-24 clitic
 
 This repository is licensed under the MIT license. See LICENSE for details.
