@@ -19,19 +19,45 @@ EXAMPLES:
 ";
 
 fn main() {
-    let args = env::args().collect::<Vec<String>>();
+    let vs = process::Command::new("ffmpeg")
+        .args([
+            "-loglevel",
+            "fatal",
+            "-i",
+            r"D:\test.mp4",
+            "-f",
+            "yuv4mpegpipe",
+            "-strict",
+            "-1",
+            "-",
+        ])
+        .stdout(process::Stdio::piped())
+        .spawn()
+        .expect("Failed in spawning FFmpeg child");
 
-    if args[1..].len() == 0 || args[1] == "-h" || args[1] == "--help" {
-        print!("{}", USAGE);
-    } else {
-        if let Err(e) = ffpb::ffmpeg(&args[1..]) {
-            eprintln!(
-                "{}{} {}",
-                "error".colorize("bold red"),
-                ":".colorize("bold white"),
-                e
-            );
-            process::exit(1);
-        }
-    }
+    let args: Vec<String> = [
+        "-f",
+        "yuv4mpegpipe",
+        "-i",
+        "-",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "medium",
+        "-crf",
+        "23",
+        "output_video.mp4",
+        "-y",
+    ]
+    .iter()
+    .map(|s| s.to_string())
+    .collect();
+
+    let _a = ffpb::ffmpeg(
+        "ffmpeg".to_owned(),
+        &args,
+        vs.stdout.expect("Failed to open vspipe stdout"),
+    );
+
+    dbg!(&_a);
 }

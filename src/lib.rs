@@ -33,11 +33,16 @@ fn time_to_secs(x: &Captures) -> Result<usize, ParseIntError> {
 ///     ffpb::ffmpeg(&args).unwrap();
 /// }
 /// ```
-pub fn ffmpeg(args: &[String]) -> Result<(), Error> {
+pub fn ffmpeg(
+    ff_path: String,
+    args: &[String],
+    vs_in: std::process::ChildStdout,
+) -> Result<(), Error> {
     kdam::term::init(stderr().is_terminal());
 
-    let ffmpeg = Command::new("ffmpeg")
+    let ffmpeg = Command::new(ff_path)
         .args(args)
+        .stdin(vs_in)
         .stderr(Stdio::piped())
         .spawn()
         .map_err(|_| new_error("failed to launch ffmpeg binary."))?
@@ -61,66 +66,95 @@ pub fn ffmpeg(args: &[String]) -> Result<(), Error> {
         ],
     );
 
-    let mut duration = None;
+    let meta = Command::new("ffmpeg")
+        .args(["-i", r"D:\test.mp4"])
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+
+    let data = std::io::read_to_string(meta.stderr.unwrap()).unwrap();
+
+    let mut duration = 0;
     let mut fps = None;
-    let mut check_overwrite = true;
-    let mut read_byte = b'\n';
 
     let duration_rx = Regex::new(r"Duration: (\d{2}):(\d{2}):(\d{2})\.\d{2}").unwrap();
     let fps_rx = Regex::new(r"(\d{2}\.\d{2}|\d{2}) fps").unwrap();
+
+    if let Some(x) = duration_rx.captures_iter(&data).next() {
+        duration = time_to_secs(&x).map_err(|_| new_error("couldn't parse total duration."))?;
+        pb.pb.total = duration;
+    }
+
+    if fps.is_none() {
+        if let Some(x) = fps_rx.captures_iter(&data).next() {
+            fps = Some(
+                x.get(1)
+                    .unwrap()
+                    .as_str()
+                    .parse::<f32>()
+                    .map_err(|_| new_error("couldn't parse fps."))?,
+            );
+            pb.pb.unit = " frame".to_owned();
+        }
+    }
+
+    // let mut check_overwrite = true;
+    let mut read_byte = b'\r';
+
     let progress_rx = Regex::new(r"time=(\d{2}):(\d{2}):(\d{2})\.\d{2}").unwrap();
 
     loop {
         let mut prepend_text = "".to_owned();
 
-        if check_overwrite {
-            let mut pre_buf = [0; 5];
-            reader
-                .read_exact(&mut pre_buf)
-                .map_err(|_| new_error("no such file or directory."))?;
-            prepend_text.push_str(&String::from_utf8_lossy(&pre_buf));
+        // if check_overwrite {
+        //     let mut pre_buf = [0; 5];
+        //     reader
+        //         .read_exact(&mut pre_buf)
+        //         .map_err(|_| new_error("no such file or directory."))?;
+        //     prepend_text.push_str(&String::from_utf8_lossy(&pre_buf));
 
-            match prepend_text.as_str() {
-                "File " => {
-                    // File 'test.mp4' already exists. Overwrite? [y/N] y
-                    let mut msg = String::new();
+        //     match prepend_text.as_str() {
+        //         "File " => {
+        //             // File 'test.mp4' already exists. Overwrite? [y/N] y
+        //             let mut msg = String::new();
 
-                    loop {
-                        let mut post_buf = vec![];
-                        reader.read_until(b']', &mut post_buf)?;
-                        msg.push_str(&String::from_utf8(post_buf).unwrap());
-                        let len = msg.len();
+        //             loop {
+        //                 let mut post_buf = vec![];
+        //                 reader.read_until(b']', &mut post_buf)?;
+        //                 msg.push_str(&String::from_utf8(post_buf).unwrap());
+        //                 let len = msg.len();
 
-                        if 5 > len {
-                            continue;
-                        }
+        //                 if 5 > len {
+        //                     continue;
+        //                 }
 
-                        if msg
-                            .get((len - 5)..len)
-                            .map(|x| x == "[y/N]")
-                            .unwrap_or(true)
-                        {
-                            break;
-                        }
-                    }
+        //                 if msg
+        //                     .get((len - 5)..len)
+        //                     .map(|x| x == "[y/N]")
+        //                     .unwrap_or(true)
+        //                 {
+        //                     break;
+        //                 }
+        //             }
 
-                    eprint!("File {} ", msg);
-                    stderr().flush()?;
-                    check_overwrite = false;
-                    read_byte = b'\r';
-                }
+        //             eprint!("File {} ", msg);
+        //             stderr().flush()?;
+        //             check_overwrite = false;
+        //             read_byte = b'\r';
+        //         }
 
-                "Press" => {
-                    // Press [q] to stop, [?] for help
-                    check_overwrite = false;
-                    read_byte = b'\r';
-                }
+        //         "Press" => {
+        //             // Press [q] to stop, [?] for help
+        //             check_overwrite = false;
+        //             read_byte = b'\r';
+        //         }
 
-                _ => (),
-            }
-        } else {
-            thread::sleep(Duration::from_secs_f32(0.1));
-        }
+        //         _ => (),
+        //     }
+        // } else {
+        // }
+
+        thread::sleep(Duration::from_secs_f32(0.1));
 
         let mut buf = vec![];
         reader.read_until(read_byte, &mut buf)?;
@@ -134,28 +168,28 @@ pub fn ffmpeg(args: &[String]) -> Result<(), Error> {
                 break;
             }
 
-            if duration.is_none() {
-                if let Some(x) = duration_rx.captures_iter(&std_line).next() {
-                    duration = Some(
-                        time_to_secs(&x)
-                            .map_err(|_| new_error("couldn't parse total duration."))?,
-                    );
-                    pb.pb.total = duration.unwrap();
-                }
-            }
+            // if duration.is_none() {
+            //     if let Some(x) = duration_rx.captures_iter(&std_line).next() {
+            //         duration = Some(
+            //             time_to_secs(&x)
+            //                 .map_err(|_| new_error("couldn't parse total duration."))?,
+            //         );
+            //         pb.pb.total = duration.unwrap();
+            //     }
+            // }
 
-            if fps.is_none() {
-                if let Some(x) = fps_rx.captures_iter(&std_line).next() {
-                    fps = Some(
-                        x.get(1)
-                            .unwrap()
-                            .as_str()
-                            .parse::<f32>()
-                            .map_err(|_| new_error("couldn't parse fps."))?,
-                    );
-                    pb.pb.unit = " frame".to_owned();
-                }
-            }
+            // if fps.is_none() {
+            //     if let Some(x) = fps_rx.captures_iter(&std_line).next() {
+            //         fps = Some(
+            //             x.get(1)
+            //                 .unwrap()
+            //                 .as_str()
+            //                 .parse::<f32>()
+            //                 .map_err(|_| new_error("couldn't parse fps."))?,
+            //         );
+            //         pb.pb.unit = " frame".to_owned();
+            //     }
+            // }
 
             if let Some(x) = progress_rx.captures_iter(&std_line).next() {
                 let mut current =
@@ -163,7 +197,7 @@ pub fn ffmpeg(args: &[String]) -> Result<(), Error> {
 
                 if let Some(frames) = fps {
                     current *= frames as usize;
-                    if pb.pb.total == duration.unwrap_or(0) {
+                    if pb.pb.total == duration {
                         pb.pb.total *= frames as usize;
                     }
                 }
