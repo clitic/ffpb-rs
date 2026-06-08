@@ -2,10 +2,10 @@
 
 [![Github Downloads](https://img.shields.io/github/downloads/clitic/ffpb-rs/total?logo=github&style=flat-square)](https://github.com/clitic/ffpb-rs/releases)
 [![Crate Downloads](https://img.shields.io/crates/d/ffpb?logo=rust&style=flat-square)](https://crates.io/ffpb)
-[![Crate Version](https://img.shields.io/crates/v/ffpb?style=flat-square)](https://crates.io/ffpb)
+[![Crate Version](https://img.shields.io/crates/v/ffpb?style=flat-square)](https://crates.io/crates/ffpb)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/clitic/ffpb-rs/build.yml?logo=github&style=flat-square)](https://github.com/clitic/ffpb-rs/actions)
 [![Docs Status](https://img.shields.io/docsrs/ffpb?logo=docsdotrs&style=flat-square)](https://docs.rs/ffpb)
-[![Crate License](https://img.shields.io/crates/l/ffpb?style=flat-square)](https://crates.io/ffpb)
+[![Crate License](https://img.shields.io/crates/l/ffpb?style=flat-square)](https://crates.io/crates/ffpb)
 [![Repo Size](https://img.shields.io/github/repo-size/clitic/ffpb-rs?logo=github&style=flat-square)](https://github.com/clitic/ffpb-rs)
 
 `ffpb` is a modern, cli progress bar for ffmpeg. It was originally inspired from [althonos/ffpb](https://github.com/althonos/ffpb). It seamlessly wraps your `ffmpeg` commands, parses the `-progress` output, and replaces ffmpeg's standard console spam with a clean, dynamic, and beautiful progress bar featuring an adaptive ETA and real-time encoding statistics.
@@ -25,7 +25,7 @@
   
 ### Dependencies
 
-- [ffmpeg](https://www.ffmpeg.org/download.html) a free, open-source command-line software framework used for handling multimedia files.
+- [ffmpeg](https://www.ffmpeg.org/download.html) is a free, open-source command-line software framework used for handling multimedia files.
 
 ### Pre-built Binaries
 
