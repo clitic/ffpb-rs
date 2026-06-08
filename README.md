@@ -10,7 +10,16 @@
 
 `ffpb` is a modern, cli progress bar for ffmpeg. It was originally inspired from [althonos/ffpb](https://github.com/althonos/ffpb). It seamlessly wraps your `ffmpeg` commands, parses the `-progress` output, and replaces ffmpeg's standard console spam with a clean, dynamic, and beautiful progress bar featuring an adaptive ETA and real-time encoding statistics.
 
-![showcase](https://raw.githubusercontent.com/clitic/ffpb-rs/main/images/showcase.gif)
+<div align="center">
+  <img src="https://raw.githubusercontent.com/clitic/ffpb-rs/refs/heads/main/images/showcase.gif" width="700px">
+</div>
+
+## Features
+
+- **Drop-in Replacement**: Simply replace `ffmpeg` with `ffpb` in your existing `ffmpeg` commands. No complex configurations needed.
+- **Beautiful UI**: Modern, true-color gradient progress bar that adapts to your terminal size.
+- **Real-Time Stats**: Displays frames, fps, q-value, size, elapsed time, ETA, bitrate, and speed.
+- **Smart Duration Parsing**: Automatically parses `-t`, `-to`, and `-ss` flags to accurately compute the effective encoding duration.
 
 ## Installation
   
