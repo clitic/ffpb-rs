@@ -50,8 +50,8 @@ fn format_size(bytes: u64) -> String {
     }
 }
 
-pub fn format_time(us: u64) -> String {
-    let total_secs = us / 1_000_000;
+pub fn format_time(ms: u64) -> String {
+    let total_secs = ms / 1_000;
     let hours = total_secs / 3600;
     let mins = (total_secs % 3600) / 60;
     let secs = total_secs % 60;
@@ -65,8 +65,8 @@ pub fn format_time(us: u64) -> String {
     }
 }
 
-pub fn format_time_clock(us: u64) -> String {
-    let total_secs = us / 1_000_000;
+pub fn format_time_clock(ms: u64) -> String {
+    let total_secs = ms / 1_000;
     let hours = total_secs / 3600;
     let mins = (total_secs % 3600) / 60;
     let secs = total_secs % 60;
@@ -84,14 +84,14 @@ pub struct ProgressStats {
     pub fps: f64,
     pub bitrate_kbps: f64,
     pub total_size: u64,
-    pub out_time_us: u64,
+    pub out_time_ms: u64,
     pub speed: f64,
     pub q: f64,
     pub is_end: bool,
 }
 
 pub struct ProgressBar {
-    total_duration_us: Option<u64>,
+    total_duration_ms: Option<u64>,
     last_render: Option<Instant>,
     started_at: Instant,
     lines_rendered: usize,
@@ -100,10 +100,10 @@ pub struct ProgressBar {
 }
 
 impl ProgressBar {
-    pub fn new(total_duration_us: Option<u64>, compact: bool) -> Self {
+    pub fn new(total_duration_ms: Option<u64>, compact: bool) -> Self {
         eprint!("\x1b[?25l");
         Self {
-            total_duration_us,
+            total_duration_ms,
             last_render: None,
             started_at: Instant::now(),
             lines_rendered: 0,
@@ -112,8 +112,8 @@ impl ProgressBar {
         }
     }
 
-    pub fn set_total_duration(&mut self, us: u64) {
-        self.total_duration_us = Some(us);
+    pub fn set_total_duration(&mut self, ms: u64) {
+        self.total_duration_ms = Some(ms);
     }
 
     pub fn update(&mut self, stats: &ProgressStats, force: bool) {
@@ -169,35 +169,34 @@ impl ProgressBar {
             reset(&mut buf);
 
             fg(&mut buf, PB_START.0, PB_START.1, PB_START.2);
-            let _ = write!(buf, " {}", format_time_clock(stats.out_time_us));
+            let _ = write!(buf, " {}", format_time_clock(stats.out_time_ms));
             reset(&mut buf);
 
-            if let Some(total) = self.total_duration_us {
+            if let Some(total) = self.total_duration_ms {
                 let _ = write!(buf, "/{}", format_time_clock(total));
             }
 
-            let elapsed_us = self.started_at.elapsed().as_micros() as u64;
-            let _ = write!(buf, " in {}", format_time(elapsed_us));
+            let elapsed_ms = self.started_at.elapsed().as_millis() as u64;
+            let _ = write!(buf, " in {}", format_time(elapsed_ms));
         }
 
         buf.push('\n');
         buf.push_str(indent);
 
-        let progress_fraction = match self.total_duration_us {
-            Some(total) if total > 0 => {
-                let frac = stats.out_time_us as f64 / total as f64;
-                if finished { 1.0 } else { frac.min(1.0) }
+        let progress_fraction = if let Some(total) = self.total_duration_ms && total > 0 {
+            let frac = stats.out_time_ms as f64 / total as f64;
+            if finished {
+                1.0
+            } else {
+                frac.min(1.0)
             }
-            _ => {
-                if finished {
-                    1.0
-                } else {
-                    0.0
-                }
-            }
+        } else if finished {
+            1.0
+        } else {
+            0.0
         };
 
-        if self.total_duration_us.is_none() && !finished {
+        if self.total_duration_ms.is_none() && !finished {
             let pulse_width = 7;
             let cycle = (self.pulse_frame * 3) % (BAR_WIDTH + pulse_width);
 
@@ -241,18 +240,19 @@ impl ProgressBar {
             reset(&mut buf);
 
             if !finished
-                && let Some(total) = self.total_duration_us
-                && stats.out_time_us > 0
-                && stats.out_time_us < total
+                && let Some(total) = self.total_duration_ms
+                && stats.out_time_ms > 0
+                && stats.out_time_ms < total
             {
-                let eta_us = (self.started_at.elapsed().as_micros() as f64
-                    * (total.saturating_sub(stats.out_time_us) as f64 / stats.out_time_us as f64))
+                let elapsed_ms = self.started_at.elapsed().as_millis() as u64;
+                let remaining_ms = total.saturating_sub(stats.out_time_ms);
+                let eta_ms = (elapsed_ms as f64 * remaining_ms as f64 / stats.out_time_ms as f64)
                     as u64;
                 dim(&mut buf);
                 buf.push_str(" • ");
                 reset(&mut buf);
                 fg(&mut buf, PB_START.0, PB_START.1, PB_START.2);
-                let _ = write!(buf, "eta {}", format_time(eta_us));
+                let _ = write!(buf, "eta {}", format_time(eta_ms));
                 reset(&mut buf);
             }
         }
@@ -268,7 +268,7 @@ impl ProgressBar {
         dim(&mut buf);
         buf.push_str(" • ");
         reset(&mut buf);
-        let _ = write!(buf, "{:.1} q", stats.q);
+        let _ = write!(buf, "{:.1}q", stats.q);
         dim(&mut buf);
         buf.push_str(" • ");
         reset(&mut buf);
