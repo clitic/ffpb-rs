@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-06-08
+
+### Fixed
+
+- ETA now uses elapsed wall-clock time instead of ffmpeg's instantaneous speed, giving accurate estimates for long encoding sessions.
+- Progress bar no longer drifts upward on each refresh when no trailing newline is written.
+
 ## [0.2.0] - 2026-06-08
 
 ### Added
@@ -37,7 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0] - 2022-05-31
 
-[Unreleased]: https://github.com/clitic/ffpb-rs/compare/0.2.0...HEAD
+[Unreleased]: https://github.com/clitic/ffpb-rs/compare/0.2.1...HEAD
+[0.2.1]: https://github.com/clitic/ffpb-rs/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/clitic/ffpb-rs/compare/0.1.2...0.2.0
 [0.1.2]: https://github.com/clitic/ffpb-rs/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/clitic/ffpb-rs/compare/0.1.0...0.1.1

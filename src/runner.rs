@@ -228,15 +228,14 @@ pub fn run_ffmpeg(args: &FfmpegArgs) -> Result<i32, Error> {
     let _ = stderr_handle.join();
 
     // Flush buffered stderr from encoding phase
-    if !clean_mode {
-        if let Ok(buffer) = stderr_buffer.lock() {
-            if !buffer.is_empty() {
-                let stderr = io::stderr();
-                let mut lock = stderr.lock();
-                let _ = lock.write_all(&buffer);
-                let _ = lock.flush();
-            }
-        }
+    if !clean_mode
+        && let Ok(buffer) = stderr_buffer.lock()
+        && !buffer.is_empty()
+    {
+        let stderr = io::stderr();
+        let mut lock = stderr.lock();
+        let _ = lock.write_all(&buffer);
+        let _ = lock.flush();
     }
 
     // Wait for ffmpeg to exit

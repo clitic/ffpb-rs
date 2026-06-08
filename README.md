@@ -65,7 +65,7 @@ Add this to your Cargo.toml file.
 
 ```toml
 [dependencies]
-ffpb = "0.2.0"
+ffpb = "0.2.1"
 ```
 
 Or add from command line.
