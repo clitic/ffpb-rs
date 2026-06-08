@@ -8,6 +8,7 @@ documentation = "https://docs.rs/ffpb"
 categories = ["command-line-interface"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
+exclude = [".github", "images"]
 
 [dependencies]
 ctrlc = "3"
