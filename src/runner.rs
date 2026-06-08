@@ -49,8 +49,8 @@ fn apply_progress_kv(stats: &mut ProgressStats, key: &str, value: &str) {
         "total_size" => {
             stats.total_size = value.parse().unwrap_or(0);
         }
-        "out_time_ms" => {
-            stats.out_time_ms = value.parse().unwrap_or(0);
+        "out_time_us" => {
+            stats.out_time_us = value.parse().unwrap_or(0);
         }
         "speed" => {
             // e.g. "1.82x" or "N/A"
@@ -65,7 +65,7 @@ fn apply_progress_kv(stats: &mut ProgressStats, key: &str, value: &str) {
     }
 }
 
-/// Compute the effective output duration in milliseconds.
+/// Compute the effective output duration in microseconds.
 pub fn compute_effective_duration(
     args: &FfmpegArgs,
     total_duration_secs: Option<f64>,
@@ -89,7 +89,7 @@ pub fn compute_effective_duration(
         (None, None, None) => None,
     };
 
-    effective.map(|secs| (secs * 1_000.0) as u64)
+    effective.map(|secs| (secs * 1_000_000.0) as u64)
 }
 
 pub fn run_ffmpeg(args: &FfmpegArgs) -> Result<i32, Error> {
@@ -195,8 +195,8 @@ pub fn run_ffmpeg(args: &FfmpegArgs) -> Result<i32, Error> {
                 if !bar_initialized {
                     encoding_active.store(true, Ordering::SeqCst);
                     let total_dur = duration_secs.lock().ok().and_then(|d| *d);
-                    let effective_ms = compute_effective_duration(args, total_dur);
-                    progress_bar = Some(ProgressBar::new(effective_ms, clean_mode));
+                    let effective_us = compute_effective_duration(args, total_dur);
+                    progress_bar = Some(ProgressBar::new(effective_us, clean_mode));
                     bar_initialized = true;
                 }
 
