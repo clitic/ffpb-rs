@@ -90,42 +90,9 @@ jobs:
           path: ffpb-${{ inputs.version }}-aarch64-apple-darwin.tar.xz
           if-no-files-found: error
 
-  build-android:
-    name: aarch64-linux-android
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Setup Android NDK
-        run: |
-          curl -fsSL "https://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux.zip" -o ndk.zip
-          unzip -q ndk.zip -d "${{ runner.temp }}"
-          rm ndk.zip
-          echo "${{ runner.temp }}/android-ndk-${{ env.ANDROID_NDK_VERSION }}/toolchains/llvm/prebuilt/linux-x86_64/bin" >> $GITHUB_PATH
-      - name: Add Rust target
-        run: rustup target add aarch64-linux-android
-      - name: Build
-        run: |
-          RUSTFLAGS="-C linker=aarch64-linux-android25-clang -C link-args=-Wl,-rpath=/data/data/com.termux/files/usr/lib" \
-            AR="llvm-ar" \
-            CC="aarch64-linux-android25-clang" \
-            CXX="aarch64-linux-android25-clang++" \
-            OPENSSL_INCLUDE_DIR="${OPENSSL_BASE}/include" \
-            OPENSSL_LIB_DIR="${OPENSSL_BASE}/lib" \
-            cargo build --release --target aarch64-linux-android
-      - name: Package
-        run: |
-          cd target/aarch64-linux-android/release
-          tar -cJf ../../../ffpb-${{ inputs.version }}-aarch64-linux-android.tar.xz ./ffpb
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: ffpb-${{ inputs.version }}-aarch64-linux-android
-          path: ffpb-${{ inputs.version }}-aarch64-linux-android.tar.xz
-          if-no-files-found: error
-
   release:
     name: Create Release
-    needs: [build-linux, build-windows, build-macos, build-android]
+    needs: [build-linux, build-windows, build-macos]
     runs-on: ubuntu-latest
     permissions:
       contents: write
