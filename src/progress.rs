@@ -143,9 +143,11 @@ impl ProgressBar {
 
     fn clear_lines(&self) {
         let mut stderr = io::stderr().lock();
-        for _ in 0..self.lines_rendered {
+        let _ = write!(stderr, "\x1b[2K");
+        for _ in 1..self.lines_rendered {
             let _ = write!(stderr, "\x1b[A\x1b[2K");
         }
+        let _ = write!(stderr, "\r");
         let _ = stderr.flush();
     }
 
@@ -278,9 +280,12 @@ impl ProgressBar {
         buf.push_str(" • ");
         reset(&mut buf);
         let _ = write!(buf, "{:.1}x", stats.speed);
-        buf.push('\n');
 
         self.lines_rendered = 3;
+
+        if finished {
+            buf.push('\n');
+        }
 
         let mut stderr = io::stderr().lock();
         let _ = write!(stderr, "{buf}");
