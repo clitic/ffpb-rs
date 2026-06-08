@@ -242,14 +242,15 @@ impl ProgressBar {
 
             if !finished
                 && let Some(total) = self.total_duration_us
-                && stats.speed > 0.0
+                && stats.out_time_us > 0
                 && stats.out_time_us < total
             {
+                let eta_us = (self.started_at.elapsed().as_micros() as f64
+                    * (total.saturating_sub(stats.out_time_us) as f64 / stats.out_time_us as f64))
+                    as u64;
                 dim(&mut buf);
                 buf.push_str(" • ");
                 reset(&mut buf);
-                let remaining_us = total.saturating_sub(stats.out_time_us);
-                let eta_us = (remaining_us as f64 / stats.speed) as u64;
                 fg(&mut buf, PB_START.0, PB_START.1, PB_START.2);
                 let _ = write!(buf, "eta {}", format_time(eta_us));
                 reset(&mut buf);
