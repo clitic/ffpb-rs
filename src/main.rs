@@ -1,37 +1,28 @@
-use kdam::term::Colorizer;
-use std::{env, process};
-
-const USAGE: &str = "ffpb 0.1.2
-clitic <clitic21@gmail.com>
-
-A coloured progress bar for ffmpeg. ffpb-rs is rust implementation of https://github.com/althonos/ffpb.
-
-ffpb is an ffmpeg progress formatter. It will attempt to display a nice progress bar in the output, based on the raw ffmpeg output, as well as an adaptative ETA timer.
-
-ffpb is is not even self-aware. Any argument given to the ffpb command is transparently given to the ffmpeg binary on your system, without any form of validation. So if you know how to use the ffmpeg cli, you know how to use ffpb.
-
-USAGE:
-  ffpb <FFMPEG OPTIONS>
-
-EXAMPLES:
-  ffpb -i test.mkv test.mp4
-  ffpb -i test.mkv -c:v copy test.mp4
-";
-
 fn main() {
-    let args = env::args().collect::<Vec<String>>();
+    let args = std::env::args().skip(1).collect::<Vec<_>>();
 
-    if args[1..].len() == 0 || args[1] == "-h" || args[1] == "--help" {
-        print!("{}", USAGE);
-    } else {
-        if let Err(e) = ffpb::ffmpeg(&args[1..]) {
-            eprintln!(
-                "{}{} {}",
-                "error".colorize("bold red"),
-                ":".colorize("bold white"),
-                e
-            );
-            process::exit(1);
-        }
+    if args.iter().any(|a| a == "-h" || a == "--help") {
+        eprintln!("ffmpeg with a progress bar.\n",);
+        eprintln!("\x1b[1mUsage:\x1b[0m ffpb [ffmpeg arguments...]\n");
+        eprintln!("\x1b[1mOptions:\x1b[0m");
+        eprintln!("  --clean          Only show progress bar, suppress ffmpeg output");
+        eprintln!("  -h, --help       Show this help");
+        eprintln!("  -V, --version    Show ffpb version\n");
+        eprintln!("\x1b[1mExamples:\x1b[0m");
+        eprintln!("  ffpb -i input.mp4 -c:v libx264 output.mp4");
+        eprintln!("  ffpb -ss 10 -to 20 -i input.mp4 output.mp4");
+        eprintln!("  ffpb -y -i input.mp4 -c:a aac output.m4a\n");
+        eprintln!("All other arguments are forwarded directly to ffmpeg.");
+        return;
     }
+    if args.iter().any(|a| a == "-V" || a == "--version") {
+        println!("ffpb {}", env!("CARGO_PKG_VERSION"));
+        return;
+    }
+
+    let code = ffpb::run(&args).unwrap_or_else(|e| {
+        eprintln!("\x1b[1;31m[ERROR]\x1b[0m {e}");
+        1
+    });
+    std::process::exit(code);
 }

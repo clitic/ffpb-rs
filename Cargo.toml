@@ -1,14 +1,13 @@
 [package]
 name = "ffpb"
-version = "0.1.2"
-edition = "2021"
-description = "A coloured progress bar for ffmpeg."
+version = "0.2.0"
+edition = "2024"
+description = "Modern progress bar for ffmpeg"
 repository = "https://github.com/clitic/ffpb-rs"
 documentation = "https://docs.rs/ffpb"
 categories = ["command-line-interface"]
-license = "MIT"
+license = "MIT OR Apache-2.0"
 readme = "README.md"
 
 [dependencies]
-regex = "1.10"
-kdam = { version = "0.5", features = ["rich"] }
+ctrlc = "3"
