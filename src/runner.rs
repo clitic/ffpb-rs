@@ -113,13 +113,17 @@ pub fn run_ffmpeg(args: &FfmpegArgs) -> Result<i32, Error> {
     let duration_secs = Arc::new(Mutex::new(None));
 
     // In clean mode: discard stderr output entirely.
-    // In default mode: forward stderr to the terminal immediately.
+    // In default mode: forward stderr before encoding starts, suppress during encoding.
     let clean_mode = args.clean;
+    let encoding_active = Arc::new(AtomicBool::new(false));
+    let stderr_buffer = Arc::new(Mutex::new(Vec::<u8>::new()));
 
     let mut stderr = child.stderr.take().expect("stderr should be piped");
     let duration_clone = Arc::clone(&duration_secs);
+    let encoding_clone = Arc::clone(&encoding_active);
+    let buffer_clone = Arc::clone(&stderr_buffer);
     let stderr_handle = thread::spawn(move || {
-        let mut real_stderr = std::io::stderr();
+        let real_stderr = std::io::stderr();
         let mut found_duration = false;
         let mut line_buf = String::new();
         let mut buf = [0u8; 256];
@@ -131,8 +135,15 @@ pub fn run_ffmpeg(args: &FfmpegArgs) -> Result<i32, Error> {
                     let chunk = &buf[..n];
 
                     if !clean_mode {
-                        let _ = real_stderr.write_all(chunk);
-                        let _ = real_stderr.flush();
+                        if encoding_clone.load(Ordering::SeqCst) {
+                            if let Ok(mut buffer) = buffer_clone.lock() {
+                                buffer.extend_from_slice(chunk);
+                            }
+                        } else {
+                            let mut stderr = real_stderr.lock();
+                            let _ = stderr.write_all(chunk);
+                            let _ = stderr.flush();
+                        }
                     }
 
                     // Parse duration internally
@@ -180,6 +191,7 @@ pub fn run_ffmpeg(args: &FfmpegArgs) -> Result<i32, Error> {
 
             if key.trim() == "progress" {
                 if !bar_initialized {
+                    encoding_active.store(true, Ordering::SeqCst);
                     let total_dur = duration_secs.lock().ok().and_then(|d| *d);
                     let effective_us = compute_effective_duration(args, total_dur);
                     progress_bar = Some(ProgressBar::new(effective_us, clean_mode));
@@ -212,6 +224,16 @@ pub fn run_ffmpeg(args: &FfmpegArgs) -> Result<i32, Error> {
 
     // Wait for stderr thread
     let _ = stderr_handle.join();
+
+    // Flush buffered stderr from encoding phase
+    if !clean_mode {
+        if let Ok(buffer) = stderr_buffer.lock() {
+            if !buffer.is_empty() {
+                let _ = std::io::stderr().write_all(&buffer);
+                let _ = std::io::stderr().flush();
+            }
+        }
+    }
 
     // Wait for ffmpeg to exit
     let status = child.wait().map_err(Error::SpawnFailed)?;
