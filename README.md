@@ -68,6 +68,25 @@ cargo add ffpb
 See [docs](https://docs.rs/ffpb) and [examples](https://github.com/clitic/ffpb-rs/blob/main/examples) to 
 know how to use it.
 
+## Donate
+
+This project is developed and maintained in my free time. Donations help cover development time, testing, and future improvements. If this tool saved you time or helped your workflow, consider supporting it.
+
+<div align="center">
+  <a href="mailto:clitic21@gmail.com" target="_blank" style="text-decoration: none;">
+    <img src="https://raw.githubusercontent.com/clitic/vsd/refs/heads/main/docs/assets/contact.svg" alt="Contact Me" height="42px">
+  </a>
+  <a href="https://ko-fi.com/clitic" target="_blank" style="text-decoration: none;">
+    <img src="https://storage.ko-fi.com/cdn/kofi5.png?v=6" alt="Buy Me a Coffee at ko-fi.com" height="40px" />
+  </a>
+  <a href="https://www.buymeacoffee.com/clitic" target="_blank" style="text-decoration: none;">
+    <img src="https://raw.githubusercontent.com/clitic/vsd/refs/heads/main/docs/assets/bmc.svg" alt="Buy Me A Coffee" height="40px">
+  </a>
+  <a href="https://paypal.me/clitic" target="_blank" style="text-decoration: none;">
+    <img src="https://raw.githubusercontent.com/clitic/vsd/refs/heads/main/docs/assets/paypal.svg" alt="PayPal" height="40px">
+  </a>
+</div>
+
 ## License
 
 Dual Licensed
