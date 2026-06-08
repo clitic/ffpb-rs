@@ -251,7 +251,7 @@ impl ProgressBar {
                 let remaining_us = total.saturating_sub(stats.out_time_us);
                 let eta_us = (remaining_us as f64 / stats.speed) as u64;
                 fg(&mut buf, PB_START.0, PB_START.1, PB_START.2);
-                let _ = write!(buf, "{} left", format_time(eta_us));
+                let _ = write!(buf, "eta {}", format_time(eta_us));
                 reset(&mut buf);
             }
         }
