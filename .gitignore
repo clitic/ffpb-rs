@@ -2,4 +2,5 @@
 Cargo.lock
 **/*.rs.bk
 
-test.mp4
+images/test.mp4
+images/out.mp4
