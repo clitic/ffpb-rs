@@ -4,10 +4,12 @@ use crate::{
     progress::{ProgressBar, ProgressStats},
 };
 use std::{
-    io::{BufRead, BufReader, Read, Write},
+    io::{self, BufRead, BufReader, Read, Write},
     process::{Command, Stdio},
-    sync::atomic::{AtomicBool, Ordering},
-    sync::{Arc, Mutex},
+    sync::{
+        Arc, Mutex,
+        atomic::{AtomicBool, Ordering},
+    },
     thread,
 };
 
@@ -102,7 +104,7 @@ pub fn run_ffmpeg(args: &FfmpegArgs) -> Result<i32, Error> {
         .stderr(Stdio::piped())
         .spawn()
         .map_err(|e| {
-            if e.kind() == std::io::ErrorKind::NotFound {
+            if e.kind() == io::ErrorKind::NotFound {
                 Error::FfmpegNotFound
             } else {
                 Error::SpawnFailed(e)
@@ -123,7 +125,7 @@ pub fn run_ffmpeg(args: &FfmpegArgs) -> Result<i32, Error> {
     let encoding_clone = Arc::clone(&encoding_active);
     let buffer_clone = Arc::clone(&stderr_buffer);
     let stderr_handle = thread::spawn(move || {
-        let real_stderr = std::io::stderr();
+        let real_stderr = io::stderr();
         let mut found_duration = false;
         let mut line_buf = String::new();
         let mut buf = [0u8; 256];
@@ -229,8 +231,10 @@ pub fn run_ffmpeg(args: &FfmpegArgs) -> Result<i32, Error> {
     if !clean_mode {
         if let Ok(buffer) = stderr_buffer.lock() {
             if !buffer.is_empty() {
-                let _ = std::io::stderr().write_all(&buffer);
-                let _ = std::io::stderr().flush();
+                let stderr = io::stderr();
+                let mut lock = stderr.lock();
+                let _ = lock.write_all(&buffer);
+                let _ = lock.flush();
             }
         }
     }
