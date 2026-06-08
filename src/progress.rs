@@ -8,11 +8,7 @@ const BAR_WIDTH: usize = 40;
 const GRADIENT_START: (u8, u8, u8) = (168, 85, 247);
 const GRADIENT_END: (u8, u8, u8) = (236, 72, 153);
 const UNFILLED_COLOR: (u8, u8, u8) = (55, 65, 81);
-const DONE_COLOR: (u8, u8, u8) = (52, 211, 153);
-const PERCENT_COLOR: (u8, u8, u8) = (243, 244, 246);
-const LABEL_COLOR: (u8, u8, u8) = (243, 244, 246);
-const STAT_COLOR: (u8, u8, u8) = (156, 163, 175);
-const SEP_COLOR: (u8, u8, u8) = (75, 85, 99);
+const DONE_COLOR: (u8, u8, u8) = (75, 181, 67);
 
 fn fg(buf: &mut String, r: u8, g: u8, b: u8) {
     let _ = write!(buf, "\x1b[38;2;{r};{g};{b}m");
@@ -20,6 +16,10 @@ fn fg(buf: &mut String, r: u8, g: u8, b: u8) {
 
 fn bold(buf: &mut String) {
     buf.push_str("\x1b[1m");
+}
+
+fn dim(buf: &mut String) {
+    buf.push_str("\x1b[2m");
 }
 
 fn reset(buf: &mut String) {
@@ -62,6 +62,19 @@ pub fn format_time(us: u64) -> String {
         format!("{mins}m{secs}s")
     } else {
         format!("{secs}s")
+    }
+}
+
+pub fn format_time_clock(us: u64) -> String {
+    let total_secs = us / 1_000_000;
+    let hours = total_secs / 3600;
+    let mins = (total_secs % 3600) / 60;
+    let secs = total_secs % 60;
+
+    if hours > 0 {
+        format!("{hours:02}:{mins:02}:{secs:02}")
+    } else {
+        format!("{mins:02}:{secs:02}")
     }
 }
 
@@ -146,11 +159,25 @@ impl ProgressBar {
         if finished {
             fg(&mut buf, DONE_COLOR.0, DONE_COLOR.1, DONE_COLOR.2);
             bold(&mut buf);
-            buf.push_str("✓ Done");
+            buf.push_str("Done");
         } else {
-            fg(&mut buf, LABEL_COLOR.0, LABEL_COLOR.1, LABEL_COLOR.2);
             bold(&mut buf);
             buf.push_str("Encoding");
+            reset(&mut buf);
+            let elapsed_us = self.started_at.elapsed().as_micros() as u64;
+
+            if let Some(total) = self.total_duration_us {
+                let _ = write!(
+                    buf,
+                    " {}/{}",
+                    format_time_clock(stats.out_time_us),
+                    format_time_clock(total)
+                );
+            } else {
+                let _ = write!(buf, " {}", format_time_clock(stats.out_time_us));
+            }
+
+            let _ = write!(buf, " since {}", format_time(elapsed_us));
         }
         reset(&mut buf);
         buf.push('\n');
@@ -220,13 +247,8 @@ impl ProgressBar {
             reset(&mut buf);
 
             buf.push_str("  ");
-            fg(&mut buf, PERCENT_COLOR.0, PERCENT_COLOR.1, PERCENT_COLOR.2);
             bold(&mut buf);
             let _ = write!(buf, "{:.1}%", progress_fraction * 100.0);
-            reset(&mut buf);
-            let elapsed_us = self.started_at.elapsed().as_micros() as u64;
-            fg(&mut buf, STAT_COLOR.0, STAT_COLOR.1, STAT_COLOR.2);
-            let _ = write!(buf, " ({})", format_time(elapsed_us));
             reset(&mut buf);
 
             if !finished
@@ -236,10 +258,16 @@ impl ProgressBar {
             {
                 let remaining_us = total.saturating_sub(stats.out_time_us);
                 let eta_us = (remaining_us as f64 / stats.speed) as u64;
-                fg(&mut buf, SEP_COLOR.0, SEP_COLOR.1, SEP_COLOR.2);
-                buf.push_str(" • ");
-                fg(&mut buf, STAT_COLOR.0, STAT_COLOR.1, STAT_COLOR.2);
-                let _ = write!(buf, "ETA {}", format_time(eta_us));
+                dim(&mut buf);
+                let _ = write!(buf, " • ");
+                reset(&mut buf);
+                fg(
+                    &mut buf,
+                    GRADIENT_START.0,
+                    GRADIENT_START.1,
+                    GRADIENT_START.2,
+                );
+                let _ = write!(buf, "{} left", format_time(eta_us));
                 reset(&mut buf);
             }
         }
@@ -252,13 +280,6 @@ impl ProgressBar {
         stat_parts.push(format!("{:.1} q", stats.q));
         stat_parts.push(format_size(stats.total_size));
 
-        let time_str = if let Some(total) = self.total_duration_us {
-            format!("{}/{}", format_time(stats.out_time_us), format_time(total))
-        } else {
-            format_time(stats.out_time_us)
-        };
-        stat_parts.push(time_str);
-
         if stats.bitrate_kbps > 0.0 {
             stat_parts.push(format!("{:.1} kbps", stats.bitrate_kbps));
         }
@@ -269,13 +290,12 @@ impl ProgressBar {
 
         for (i, part) in stat_parts.iter().enumerate() {
             if i > 0 {
-                fg(&mut buf, SEP_COLOR.0, SEP_COLOR.1, SEP_COLOR.2);
+                dim(&mut buf);
                 buf.push_str(" • ");
+                reset(&mut buf);
             }
-            fg(&mut buf, STAT_COLOR.0, STAT_COLOR.1, STAT_COLOR.2);
             buf.push_str(part);
         }
-        reset(&mut buf);
         buf.push('\n');
 
         self.lines_rendered = 3;

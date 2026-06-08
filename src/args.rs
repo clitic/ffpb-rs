@@ -26,6 +26,23 @@ pub fn parse_time(s: &str) -> Option<f64> {
 }
 
 pub fn parse_args(args: &[String]) -> FfmpegArgs {
+    // PowerShell splits args like `-c:v` into `["-c:", "v"]`.
+    // Rejoin them before parsing.
+    let mut rejoined = Vec::with_capacity(args.len());
+    let mut i = 0;
+
+    while i < args.len() {
+        if args[i].starts_with('-') && args[i].ends_with(':') && i + 1 < args.len() {
+            rejoined.push(format!("{}{}", args[i], args[i + 1]));
+            i += 2;
+        } else {
+            rejoined.push(args[i].clone());
+            i += 1;
+        }
+    }
+
+    let args = rejoined;
+
     let mut ss = None;
     let mut to = None;
     let mut t = None;

@@ -112,41 +112,25 @@ pub fn run_ffmpeg(args: &FfmpegArgs) -> Result<i32, Error> {
     // Shared storage for the duration parsed from stderr
     let duration_secs = Arc::new(Mutex::new(None));
 
-    // In clean mode: buffer ALL stderr, only dump on error.
-    // In default mode: buffer during encoding (to prevent cursor corruption), flush after.
-    let encoding_active = Arc::new(AtomicBool::new(false));
-    let stderr_buffer = Arc::new(Mutex::new(Vec::new()));
+    // In clean mode: discard stderr output entirely.
+    // In default mode: forward stderr to the terminal immediately.
     let clean_mode = args.clean;
 
-    let stderr = child.stderr.take().expect("stderr should be piped");
+    let mut stderr = child.stderr.take().expect("stderr should be piped");
     let duration_clone = Arc::clone(&duration_secs);
-    let encoding_clone = Arc::clone(&encoding_active);
-    let buffer_clone = Arc::clone(&stderr_buffer);
     let stderr_handle = thread::spawn(move || {
-        let mut reader = stderr;
         let mut real_stderr = std::io::stderr();
         let mut found_duration = false;
         let mut line_buf = String::new();
         let mut buf = [0u8; 256];
 
         loop {
-            match reader.read(&mut buf) {
+            match stderr.read(&mut buf) {
                 Ok(0) | Err(_) => break,
                 Ok(n) => {
                     let chunk = &buf[..n];
 
-                    if clean_mode {
-                        // Clean mode: always buffer
-                        if let Ok(mut buffer) = buffer_clone.lock() {
-                            buffer.extend_from_slice(chunk);
-                        }
-                    } else if encoding_clone.load(Ordering::SeqCst) {
-                        // Default mode during encoding: buffer to prevent cursor corruption
-                        if let Ok(mut buffer) = buffer_clone.lock() {
-                            buffer.extend_from_slice(chunk);
-                        }
-                    } else {
-                        // Default mode before/after encoding: forward immediately
+                    if !clean_mode {
                         let _ = real_stderr.write_all(chunk);
                         let _ = real_stderr.flush();
                     }
@@ -196,7 +180,6 @@ pub fn run_ffmpeg(args: &FfmpegArgs) -> Result<i32, Error> {
 
             if key.trim() == "progress" {
                 if !bar_initialized {
-                    encoding_active.store(true, Ordering::SeqCst);
                     let total_dur = duration_secs.lock().ok().and_then(|d| *d);
                     let effective_us = compute_effective_duration(args, total_dur);
                     progress_bar = Some(ProgressBar::new(effective_us, clean_mode));
@@ -227,32 +210,11 @@ pub fn run_ffmpeg(args: &FfmpegArgs) -> Result<i32, Error> {
         }
     }
 
-    // Encoding done
-    encoding_active.store(false, Ordering::SeqCst);
-
     // Wait for stderr thread
     let _ = stderr_handle.join();
 
     // Wait for ffmpeg to exit
     let status = child.wait().map_err(Error::SpawnFailed)?;
-    let code = status.code().unwrap_or(1);
 
-    // Flush buffered stderr
-    if let Ok(buffer) = stderr_buffer.lock()
-        && !buffer.is_empty()
-    {
-        if clean_mode {
-            // Clean mode: only dump on error
-            if code != 0 {
-                let _ = std::io::stderr().write_all(&buffer);
-                let _ = std::io::stderr().flush();
-            }
-        } else {
-            // Default mode: always flush post-encoding output
-            let _ = std::io::stderr().write_all(&buffer);
-            let _ = std::io::stderr().flush();
-        }
-    }
-
-    Ok(code)
+    Ok(status.code().unwrap_or(1))
 }
