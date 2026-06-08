@@ -1,35 +1,30 @@
-# ffpb-rs
+<h1 align="center">ffpb-rs</h1>
 
-**Not smart. Not comprehensive. Not guaranteed to work.**
+[![Github Downloads](https://img.shields.io/github/downloads/clitic/ffpb-rs/total?logo=github&style=flat-square)](https://github.com/clitic/ffpb-rs/releases)
+[![Crate Downloads](https://img.shields.io/crates/d/ffpb?logo=rust&style=flat-square)](https://crates.io/ffpb)
+[![Crate Version](https://img.shields.io/crates/v/ffpb?style=flat-square)](https://crates.io/ffpb)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/clitic/ffpb-rs/build.yml?logo=github&style=flat-square)](https://github.com/clitic/ffpb-rs/actions)
+[![Docs Status](https://img.shields.io/docsrs/ffpb?logo=docsdotrs&style=flat-square)](https://docs.rs/ffpb)
+[![Crate License](https://img.shields.io/crates/l/ffpb?style=flat-square)](https://crates.io/ffpb)
+[![Repo Size](https://img.shields.io/github/repo-size/clitic/ffpb-rs?logo=github&style=flat-square)](https://github.com/clitic/ffpb-rs)
 
-<p align="center">
-  <a href="https://crates.io/crates/ffpb">
-    <img src="https://img.shields.io/crates/d/ffpb?style=flat-square">
-  </a>
-  <a href="https://crates.io/crates/ffpb">
-    <img src="https://img.shields.io/crates/v/ffpb?style=flat-square">
-  </a>
-  <a href="https://docs.rs/ffpb/latest/ffpb">
-    <img src="https://img.shields.io/docsrs/ffpb?logo=docsdotrs&style=flat-square">
-  </a>
-  <a href="https://github.com/clitic/ffpb#license">
-    <img src="https://img.shields.io/crates/l/ffpb?style=flat-square">
-  </a>
-  <a href="https://github.com/clitic/ffpb-rs">
-    <img src="https://img.shields.io/github/repo-size/clitic/ffpb-rs?style=flat-square">
-  </a>
-</p>
-
-ffpb-rs is rust implementation of [ffpb](https://github.com/althonos/ffpb).
-ffpb is an ffmpeg progress formatter. It will attempt to display a nice progress bar in the output, based on the raw ffmpeg output, as well as an adaptative ETA timer.
+`ffpb` is a modern, cli progress bar for ffmpeg. It was originally inspired from [althonos/ffpb](https://github.com/althonos/ffpb). It seamlessly wraps your `ffmpeg` commands, parses the `-progress` output, and replaces ffmpeg's standard console spam with a clean, dynamic, and beautiful progress bar featuring an adaptive ETA and real-time encoding statistics.
 
 ![showcase](https://raw.githubusercontent.com/clitic/ffpb-rs/main/images/showcase.gif)
 
-## Installations
+## Installation
+  
+### Dependencies
 
-Visit [releases](https://github.com/clitic/ffpb-rs/releases) for prebuilt binaries. You just need to copy that binary to any path specified in your `PATH` environment variable.
+- [ffmpeg](https://www.ffmpeg.org/download.html) a free, open-source command-line software framework used for handling multimedia files.
 
-Or you can even install it through cargo.
+### Pre-built Binaries
+
+Visit the [releases page](https://github.com/clitic/ffpb-rs/releases) for pre-built binaries. Extract the binary and add its path to your system's `PATH`.
+
+### Install via Cargo
+
+You can also install ffpb using cargo.
 
 ```bash
 cargo install ffpb
@@ -37,36 +32,45 @@ cargo install ffpb
 
 ## Usage
 
-ffpb is is not even self-aware. Any argument given to the ffpb command is transparently given to the ffmpeg binary on your system, without any form of validation. So if you know how to use the ffmpeg cli, you know how to use ffpb.
+```
+ffmpeg with a progress bar.
 
-```bash
-ffpb --help
+Usage: ffpb [ffmpeg arguments...]
+
+Options:
+  --clean          Only show progress bar, suppress ffmpeg output
+  -h, --help       Show this help
+  -V, --version    Show ffpb version
+
+Examples:
+  ffpb -i input.mp4 -c:v libx264 output.mp4
+  ffpb -ss 10 -to 20 -i input.mp4 output.mp4
+  ffpb -y -i input.mp4 -c:a aac output.m4a
+
+All other arguments are forwarded directly to ffmpeg.
 ```
 
-## Rust Library
+## Library
 
 Add this to your Cargo.toml file.
 
 ```toml
 [dependencies]
-ffpb = "0.1.2"
+ffpb = "0.2.0"
 ```
 
- Then call ffmpeg like this.
+Or add from command line.
 
-```rust
-fn main() {
-    let args = ["-i", "test.mp4", "-c:v", "copy", "test.mkv"]
-        .iter()
-        .map(|x| x.to_string())
-        .collect::<Vec<String>>();
-
-    ffpb::ffmpeg(&args).unwrap();
-}
+```bash
+cargo add ffpb
 ```
+
+See [docs](https://docs.rs/ffpb) and [examples](https://github.com/clitic/ffpb-rs/blob/main/examples) to 
+know how to use it.
 
 ## License
 
-&copy; 2022-24 clitic
+Dual Licensed
 
-This repository is licensed under the MIT license. See LICENSE for details.
+- [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0) ([LICENSE-APACHE](LICENSE-APACHE))
+- [MIT license](https://opensource.org/licenses/MIT) ([LICENSE-MIT](LICENSE-MIT))
