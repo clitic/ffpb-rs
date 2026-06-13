@@ -31,6 +31,8 @@
 
 Visit the [releases page](https://github.com/clitic/ffpb-rs/releases) for pre-built binaries. Extract the binary and add its path to your system's `PATH`.
 
+[![Packaging Status](https://repology.org/badge/vertical-allrepos/ffpb-rs.svg)](https://repology.org/project/ffpb-rs/versions)
+
 ### Install via Cargo
 
 You can also install ffpb using cargo.
