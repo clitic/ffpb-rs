@@ -2,7 +2,7 @@
 
 [![Github Downloads](https://img.shields.io/github/downloads/clitic/ffpb-rs/total?logo=github&style=flat-square)](https://github.com/clitic/ffpb-rs/releases)
 [![Crate Downloads](https://img.shields.io/crates/d/ffpb?logo=rust&style=flat-square)](https://crates.io/ffpb)
-[![Crate Version](https://img.shields.io/crates/v/ffpb?style=flat-square)](https://crates.io/crates/ffpb)
+[![Crate Version](https://img.shields.io/crates/v/ffpb?logo=rust&style=flat-square)](https://crates.io/crates/ffpb)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/clitic/ffpb-rs/build.yml?logo=github&style=flat-square)](https://github.com/clitic/ffpb-rs/actions)
 [![Docs Status](https://img.shields.io/docsrs/ffpb?logo=docsdotrs&style=flat-square)](https://docs.rs/ffpb)
 [![Crate License](https://img.shields.io/crates/l/ffpb?style=flat-square)](https://crates.io/crates/ffpb)
